@@ -1,0 +1,24 @@
+﻿@using Uqbar.Services.Framework.Agendamento
+@model Uqbar.Services.Framework.Agendamento.AgendaItem
+@{
+    <text>Semanal : </text>
+    if (Model.DiasSemana != null)
+    {
+        for (int i = 0; i < Model.DiasSemana.Count; i++)
+        {
+            string texto = AgendaItem.DiasSemanaLabels[Model.DiasSemana[i]];
+            <text> @(texto)</text>
+            if (i < Model.DiasSemana.Count - 2)
+            {
+                <text>,</text>
+            } else if (i < Model.DiasSemana.Count - 1)
+            {
+                <text>e</text>
+            }
+        }
+        
+        <text> às @(Model.Hora.ToString().PadLeft(2,'0')):@(Model.Minutos.ToString().PadLeft(2,'0'))</text>
+    }
+}
+
+    

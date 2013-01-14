@@ -1,0 +1,28 @@
+﻿@using Uqbar.Services.Framework.Mensagens
+@model Mensagem[]
+@if (Model != null)
+{
+    foreach (Mensagem msg in Model)
+    {
+        if (msg != null)
+        {
+            string cssClass;
+            switch (msg.Type)
+            {
+                case Mensagem.MessageType.Error:
+                    cssClass = "label-important";
+                    break;
+                case Mensagem.MessageType.Warning:
+                    cssClass = "label-warning";
+                    break;
+                case Mensagem.MessageType.Trace:
+                    cssClass = "label-inverse";
+                    break;
+                default:
+                    cssClass = "label-info";
+                    break;
+            }
+            <text><div><span class="label">@(msg.Time)</span>&nbsp;<span class="label @(cssClass)">@(msg.Body)</span></div></text>
+        }
+    }
+}

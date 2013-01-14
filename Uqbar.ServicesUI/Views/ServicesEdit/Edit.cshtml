@@ -1,0 +1,75 @@
+﻿@using Uqbar.Services.Framework
+@model Uqbar.ServicesUI.ViewModels.ServicesEditViewModel
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script>
+    
+</script>
+<div>
+    <div class="hero-unit">
+        <h1 style="display: inline-block;">Serviço&nbsp;&nbsp;</h1>
+        <h3 style="display: inline-block; margin-bottom:0px;">@(Model.Data.URL)</h3>
+        <h2>Dados</h2>
+        <div style="display:inline-block;">
+        @using (Html.BeginForm("SaveInfo", "ServicesEdit"))
+        {
+            <input type="hidden" name="url" id="url" value="@Model.Data.URL"/>
+
+            <div style="display: inline-block; margin:0px 20px 0px 0px;">
+                <label>Categoria</label>
+                @Html.DropDownList("idCategoria", new SelectList(Model.Categorias, "Id", "Nome", Model.IdCategoria))
+            </div>
+            <div style="display: inline-block; margin:0px 0px 0px 0px;">
+                <label>Nome</label>
+                @Html.TextBox("name", Model.Data.Name)
+            </div>
+            <div style="margin: 15px 0px 0px 0px; text-align:right; ">
+                <span><a href="~/" class="btn">Voltar</a></span>
+                <span><input type="submit" value="Gravar" class="btn btn-primary"/></span>
+            </div>
+        }
+        </div>
+    </div>
+    <div>
+        <script>
+            $(function () {
+                $(document).ready(function () {
+                    Region.Update('@Url.Action("Agenda", new { controller = "ServicesEdit", action = "Agenda", url = Model.Data.URL })', '#Agendamento');
+                });
+            });
+        </script>
+        <h3>Agendamento</h3>
+        <div id="Agendamento">
+            
+        </div>
+    </div>
+    <div>
+        <script>
+            var Mensagens = {
+                PageSize: 50,
+                Latest: function() {
+                    Mensagens.Append(0, Mensagens.PageSize);
+                },
+                Append: function(start, length) {
+                    var url = '@Url.Action("Mensagens", new { controller = "ServicesEdit", action = "Agenda", url = Model.Data.URL })';
+                    url += '&start=' + start;
+                    url += '&length=' + length;
+
+                    Region.Update(url, '#Mensagens');
+                }
+            };
+            
+            $(function () {
+                $(document).ready(function () {
+                    Mensagens.Latest();
+                });
+            });
+        </script>
+        <h3>Mensagens</h3>
+        <div id="Mensagens">
+            
+        </div>
+    </div>
+</div>

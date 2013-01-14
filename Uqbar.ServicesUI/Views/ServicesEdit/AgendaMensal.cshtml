@@ -1,0 +1,2 @@
+﻿@model Uqbar.Services.Framework.Agendamento.AgendaItem
+Mensal : no dia @(Model.Dia) @if(Model.Dia > 28) { <text>(antecipa se for necessário) </text>} às @(Model.Hora.ToString().PadLeft(2,'0')):@(Model.Minutos.ToString().PadLeft(2,'0'))

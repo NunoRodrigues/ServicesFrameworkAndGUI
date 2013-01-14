@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    
+    <link href="~/Content/bootstrap.css" rel="stylesheet">
+    <link href="~/Content/bootstrap-responsive.css" rel="stylesheet">
+    <link href="~/Content/datepicker.css" rel="stylesheet">
+    
+    <script src="~/scripts/jquery-1.8.3.js"></script>
+    <script src="~/scripts/bootstrap.js"></script>
+    <script src="~/scripts/bootstrap-datepicker.js"></script>
+     <script>
+         var Region = {
+             Update: function (url, destinationName) {
+                 $.get(url, null, function (data) {
+                     var destination = $(destinationName);
+
+                     $(destination).html(data);
+
+                 }, 'html');
+             },
+             Append: function (url, destinationName) {
+                 $.get(url, null, function (data) {
+                     var destination = $(destinationName);
+
+                     $(destination).append(data);
+
+                 }, 'html');
+             }
+         };
+         
+         function formatDate(date) {
+             //"2013-01-04T15:20:55.809Z"
+             var result = date.toISOString();
+
+             //"2013-01-04 15:20:55.809Z"
+             result = result.replace('T', ' ');
+
+             //"2013-01-04 15:20"
+             result = result.substring(0, result.lastIndexOf(':'));
+
+             return result;
+         }
+    </script>
+</head>
+<body>
+    @RenderBody()
+
+    
+   
+</body>
+</html>

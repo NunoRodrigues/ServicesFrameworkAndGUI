@@ -1,0 +1,9 @@
+﻿@model Uqbar.Services.Framework.Agendamento.AgendaItem
+@{
+    DateTime date = DateTime.MinValue;
+    if (Model.Data != null)
+    {
+        date = (DateTime) Model.Data;
+    }
+}
+Pontual : em @(date.ToString()) às @(Model.Hora.ToString().PadLeft(2,'0')):@(Model.Minutos.ToString().PadLeft(2,'0'))

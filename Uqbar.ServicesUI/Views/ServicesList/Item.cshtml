@@ -1,0 +1,46 @@
+﻿@using Uqbar.Services.Framework
+@using Uqbar.ServicesUI.Data
+@model Uqbar.ServicesUI.Data.ServicoExtraInfo
+@{
+    string extraClass;
+    switch (Model.Estado)
+    {
+        case ServicoInfo.EstadosEnum.Indisponivel:
+            extraClass = "btn-danger";
+            break;
+        case ServicoInfo.EstadosEnum.Parado:
+            extraClass = "btn-warning";
+            break;
+        case ServicoInfo.EstadosEnum.Correr:
+            extraClass = "btn-success";
+            break;
+        default:
+            extraClass = "btn-info";
+            break;
+    }
+
+    string nextCall = "N/D";
+
+    if (Model.NextCall < TimeSpan.MaxValue.TotalMilliseconds)
+    {
+        nextCall = DateTime.Now.AddMilliseconds(Model.NextCall).ToString(Model.GetFormatDateTime());
+    }
+}
+<script>
+    $(function() {
+        $(document).ready(function () {
+
+        });
+    });
+</script>
+<div>
+    <a class="btn @extraClass" role="button" href="@Url.Action("Edit", new {controller = "ServicesEdit", action = "Edit", url = Model.URL})">
+        <div><b>@Model.Name</b></div>
+        <div>@Model.URL</div>
+        <div style="font:smaller !important;">@Model.Estado</div>
+        <div style="font:smaller !important;">@(nextCall)</div>
+    </a>
+</div>
+<!--div style="text-align: center;">
+    <input type="button" value="&#8635;" onclick="Region.Update('@Url.Action("Item", new { controller = "ServicesList", action = "Item", url = Model.URL })', 'div#@Model.SafeID');" />
+</div-->

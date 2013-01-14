@@ -1,0 +1,46 @@
+﻿@using Uqbar.Services.Framework.Agendamento
+@using Uqbar.ServicesUI.Data
+@model Uqbar.ServicesUI.Data.ServicoExtraInfo
+@{
+    Agenda agenda = Model.GetAgenda();
+    DateTime nextCall = DateTime.MinValue;
+
+    if (Model.NextCall < TimeSpan.MaxValue.TotalMilliseconds)
+    {
+        nextCall = DateTime.Now.AddMilliseconds(Model.NextCall);
+    }
+}
+<script>
+    var Agenda = {
+        RemoveItem: function(id) {
+            var url = '@Url.Action("AgendaRemove", new { controller = "ServicesEdit", action = "Agenda" })';
+            url += '?url=' + $('input#url').val();
+            url += '&id=' + id;
+
+            Region.Update(url, '#Agendamento');
+        }
+    };
+</script>
+<div id="Agenda">
+    <div style="height: 40px; margin: 0px 0px 10px 0px;">
+        <a href="#" role="button" class="btn btn-small btn-info" data-toggle="modal" style="width:30px !important;">i</a>
+        @if (nextCall != DateTime.MinValue)
+        {
+            <span class="well well-small">Próxima execução em <b>@(nextCall.ToString(Model.GetFormatDateTime()))</b></span>
+        }
+        else
+        {
+            <span class="well well-small"><b>Por favor, adicione um agendamento</b></span>
+        }
+    </div>
+    <div style="margin: 10px 0px 10px 0px;">
+    @foreach (AgendaItem item in agenda.List)
+    {
+        <div style="height: 40px;">
+            <a href="javascript:Agenda.RemoveItem('@item.Id'); return false;" role="button" class="btn btn-small btn-danger" data-toggle="modal" style="width:30px !important;">x</a>
+            <span class="well well-small">@{ Html.RenderPartial("Agenda" + item.Tipo.ToString(), item); }</span>
+        </div>
+    }
+    </div>
+    @{ Html.RenderPartial("AgendaItemNew", agenda); }
+</div>

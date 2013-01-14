@@ -1,0 +1,135 @@
+﻿@using Uqbar.Services.Framework.Agendamento
+@model Uqbar.Services.Framework.Agendamento.Agenda
+<script>
+    var AgendaNew = {
+        Tipo: 0,
+        ChangeTipo : function(newID) {
+            AgendaNew.Tipo = newID;
+            
+            switch (AgendaNew.Tipo) {
+                case @((int)AgendaItem.Periodicidade.Pontual):
+                    $('#AreaData').show();
+                    $('#AreaHorasMinutos').show();
+                    $('#AreaDiaSemana').hide();
+                    $('#AreaDia').hide();
+                    break;
+                case @((int)AgendaItem.Periodicidade.Diario):
+                    $('#AreaData').hide();
+                    $('#AreaHorasMinutos').show();
+                    $('#AreaDiaSemana').hide();
+                    $('#AreaDia').hide();
+                    break;
+                case @((int)AgendaItem.Periodicidade.Semanal):
+                    $('#AreaData').hide();
+                    $('#AreaHorasMinutos').show();
+                    $('#AreaDiaSemana').show();
+                    $('#AreaDia').hide();
+                    break;
+                case @((int)AgendaItem.Periodicidade.Mensal):
+                    $('#AreaData').hide();
+                    $('#AreaHorasMinutos').show();
+                    $('#AreaDiaSemana').hide();
+                    $('#AreaDia').show();
+                    break;
+            }
+        },
+        Add : function() {
+            var url = '@Url.Action("AgendaAdd", new { controller = "ServicesEdit", action = "Agenda" })';
+            url += '?url=' + $('input#url').val();
+            url += '&tipo=' + AgendaNew.Tipo;
+
+            var values = {};
+            $.each($('form#AgendaItemNew').serializeArray(), function(i, field) {
+                url += '&' + field.name + '=' + field.value;
+            });
+
+            Region.Update(url, '#Agendamento');
+
+            $('#myModal').modal('hide');
+        }
+    };
+    
+    $(function () {
+        $(document).ready(function () {
+            // Tipo Inicial Selecionado
+            var button = $('div.btn-group').find('button')[0];
+            $(button).addClass('active');
+            AgendaNew.ChangeTipo(0);
+            
+            // DatePicker
+            $('.datepicker').datepicker({
+                format: 'yyyy-mm-dd'
+            });
+        });
+    });
+</script>
+
+<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3>Agendamento</h3>
+    </div>
+    <div class="modal-body">
+        <p>
+            <div style="text-align: center;">
+                <div class="btn-group" data-toggle="buttons-radio">
+                    @foreach (AgendaItem.Periodicidade suit in Enum.GetValues(typeof (AgendaItem.Periodicidade)))
+                    {
+                        <button type="button" class="btn btn-info" onclick="AgendaNew.ChangeTipo(@((int)suit))">&nbsp;@AgendaItem.PeriodicidadeLabels[suit]&nbsp;</button>
+                    }
+                </div>
+                <div>&nbsp;</div>
+                @using (Html.BeginForm("AgendaAdd", "ServicesEdit", FormMethod.Post, new { id = "AgendaItemNew", onsubmit = "return Agenda.AddItem(this)" }))
+                {
+                    <div id="AreaData">
+                        <label>Data</label>
+                        <input type="text" id="Data" name="data" class="datepicker"/>
+                    </div>
+                    <div id="AreaDiaSemana">
+                        @foreach (DayOfWeek week in Enum.GetValues(typeof (DayOfWeek)))
+                        {
+                            <span style="display:inline-block !important; margin:0px 20px 0px 0px"><label for="@week.ToString()" style="display:inline-block !important;">@AgendaItem.DiasSemanaLabels[week]</label><br /><input type="checkbox" name="diaSemana" id="@week.ToString()" value="@((int)week)"/></span>
+                        }
+                    </div>
+                    <div id="AreaDia">
+                        <span>
+                            <label for="Dia">Dia</label>
+                            <select id="Dia" name="dia" style="width:60px !important">
+                                @for (int i = 0; i <= 31; i++)
+                                {
+                                    <option value="@i">@i</option>
+                                }
+                            </select>
+                        </span>
+                    </div>
+                    <div id="AreaHorasMinutos">
+                        <span>
+                            <label>Hora</label>
+                            <select id="Horas" name="horas" style="width:60px !important">
+                                @for (int i = 0; i <= 23; i++)
+                                {
+                                    <option value="@i">@i</option>
+                                }
+                            </select> :
+                            <select id="Minutos" name="minutos" style="width:60px !important">
+                                @for (int i = 0; i <= 59; i++)
+                                {
+                                    <option value="@i">@i</option>
+                                }
+                            </select>
+                        </span>
+                    </div>
+                }
+            </div>
+        </p>
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="btn" data-dismiss="modal">Fechar</a>
+        <a href="#" class="btn btn-primary" onclick="AgendaNew.Add()">Adicionar</a>
+    </div>
+</div>
+
+<div>
+    <a href="#myModal" role="button" class="btn btn-small btn-success" data-toggle="modal" style="width:30px !important;">+</a>
+    <span>Adicionar</span>
+</div>

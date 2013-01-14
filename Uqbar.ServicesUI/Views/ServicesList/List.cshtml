@@ -1,0 +1,82 @@
+﻿@using Uqbar.ServicesUI.Data
+@using Uqbar.Services.Framework
+@using Uqbar.ServicesUI.ViewModels
+@model Uqbar.ServicesUI.ViewModels.ServicesListViewModel
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .ListaItem {
+        display: inline-block;
+    }
+</style>
+<script>
+    
+    function Categoria_Changed(combo) {
+        var value = $(combo).val();
+        
+        $('.Categoria').show();
+        if (value.length > 0) {
+            $('.Categoria:not(#Categoria_' + value + ')').hide();
+        }
+    }
+    
+    function Estado_Changed(combo) {
+        var value = $(combo).val();
+
+        $('.ListaItem').show();
+        if (value.length > 0) {
+            $('.ListaItem:not(.Estado_' + value + ')').hide();
+        }
+    }
+
+    function getDate(interval) {
+        var now = new Date();
+        return new Date(now.getTime() + interval);
+    }
+</script>
+<div>
+    <div class="hero-unit">
+        <h1>Serviços</h1>    
+        <h2>Filtros</h2>
+        <div style="display: inline-block; margin:0px 20px 0px 0px;">
+            <label>Categoria</label>
+            @Html.DropDownListFor(n => n.IdCategoria, new SelectList(Model.Categorias, "Id", "Nome"), "", new { onchange = "Categoria_Changed(this);" })
+        </div>
+        <div style="display: inline-block; margin:0px 20px 0px 0px;">
+            <label>Estado</label>
+            @Html.DropDownListFor(n => n.IdEstado, Model.IdEstado.ToSelectList(), "", new { onchange = "Estado_Changed(this);" })
+        </div>
+    </div>
+    <div style="margin: 0px 10px 0px 10px;">
+        <div>
+            @foreach (Categoria cat in Model.Categorias.Where(c => c.Servicos != null))
+            {
+                <div class="Categoria" id="Categoria_@(cat.Id)">
+                    <div>
+                        <h3 style="display: inline-block;">@cat.Nome</h3>
+                        <h5 style="display: inline-block;">(@(cat.Servicos.Count))</h5>
+                    </div>
+                    <div class="Lista">
+                        @foreach (ServicoExtraInfo server in cat.Servicos)
+                        {
+                            <div class="ListaItem Estado_@((int)server.Estado)">
+                                <script>
+                                    $(function() {
+                                        $(document).ready(function () {
+                                            Region.Update('@Url.Action("Item", new { controller = "ServicesList", action = "Item", url = server.URL })', 'div#@server.SafeID');
+                                        });
+                                    });
+                                </script>
+                                <div id="@server.SafeID" style="display: inline-block;">
+                                    @{ Html.RenderPartial("Item", server ); }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
