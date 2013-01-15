@@ -31,7 +31,7 @@ namespace Uqbar.Services.Framework.Mensagens
     {
         public static void Raise(this Mensagem.MensagemDelegate sender, Mensagem.MessageType type, string body)
         {
-            sender.Raise(new Mensagem() { Type = type, Body = body });
+            sender.Raise(new Mensagem() { Type = type, Body = body, Time = DateTime.Now });
         }
 
         public static void Raise(this Mensagem.MensagemDelegate sender, string source, Mensagem.MessageType type, string body, Exception exception)

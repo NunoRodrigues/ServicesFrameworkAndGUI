@@ -5,11 +5,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uqbar.Services.Framework", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uqbar.ServicesUI", "Uqbar.ServicesUI\Uqbar.ServicesUI.csproj", "{DC476853-BC07-4006-B56B-E816CC484AA1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uqbar.Services.WindowsService", "Uqbar.Services.WindowsService\Uqbar.Services.WindowsService.csproj", "{392323FC-97AE-4784-91D3-4BA33D9A189D}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WindowsServices", "WindowsServices", "{E75AD7D1-BD78-441A-81FF-9B801EC12260}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uqbar.Services.WinSrv.CVM", "WindowsServices\Uqbar.Services.WinSrv.CVM\Uqbar.Services.WinSrv.CVM.csproj", "{CA8DF013-CD89-4DCA-ACA8-DFD456E6DB67}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uqbar.WindowsServices.FIIDadosCadastrais", "WindowsServices\Uqbar.WindowsServices.FIIDadosCadastrais\Uqbar.WindowsServices.FIIDadosCadastrais.csproj", "{CA8DF013-CD89-4DCA-ACA8-DFD456E6DB67}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uqbar.WindowsServices.FIIDemonstracoesFinanceiras", "WindowsServices\Uqbar.WindowsServices.FIIDemonstracoesFinanceiras\Uqbar.WindowsServices.FIIDemonstracoesFinanceiras.csproj", "{F3B73CC2-B581-41AC-B717-64494D0FABAB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,27 +17,28 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{392323FC-97AE-4784-91D3-4BA33D9A189D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{392323FC-97AE-4784-91D3-4BA33D9A189D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{392323FC-97AE-4784-91D3-4BA33D9A189D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{392323FC-97AE-4784-91D3-4BA33D9A189D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{618C3BAF-B0D5-484B-99A5-D83CFAF61502}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{618C3BAF-B0D5-484B-99A5-D83CFAF61502}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{618C3BAF-B0D5-484B-99A5-D83CFAF61502}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{618C3BAF-B0D5-484B-99A5-D83CFAF61502}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CA8DF013-CD89-4DCA-ACA8-DFD456E6DB67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CA8DF013-CD89-4DCA-ACA8-DFD456E6DB67}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CA8DF013-CD89-4DCA-ACA8-DFD456E6DB67}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CA8DF013-CD89-4DCA-ACA8-DFD456E6DB67}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DC476853-BC07-4006-B56B-E816CC484AA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DC476853-BC07-4006-B56B-E816CC484AA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC476853-BC07-4006-B56B-E816CC484AA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC476853-BC07-4006-B56B-E816CC484AA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA8DF013-CD89-4DCA-ACA8-DFD456E6DB67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA8DF013-CD89-4DCA-ACA8-DFD456E6DB67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA8DF013-CD89-4DCA-ACA8-DFD456E6DB67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA8DF013-CD89-4DCA-ACA8-DFD456E6DB67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3B73CC2-B581-41AC-B717-64494D0FABAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3B73CC2-B581-41AC-B717-64494D0FABAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3B73CC2-B581-41AC-B717-64494D0FABAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3B73CC2-B581-41AC-B717-64494D0FABAB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{CA8DF013-CD89-4DCA-ACA8-DFD456E6DB67} = {E75AD7D1-BD78-441A-81FF-9B801EC12260}
+		{F3B73CC2-B581-41AC-B717-64494D0FABAB} = {E75AD7D1-BD78-441A-81FF-9B801EC12260}
 	EndGlobalSection
 EndGlobal

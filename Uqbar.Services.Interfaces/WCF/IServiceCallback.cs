@@ -5,6 +5,7 @@ using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 using Uqbar.Services.Framework.Mensagens;
+using Uqbar.Services.Framework.WindowsService;
 
 namespace Uqbar.Services.Framework.WCF
 {

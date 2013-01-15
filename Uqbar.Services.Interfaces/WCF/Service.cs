@@ -24,23 +24,11 @@ namespace Uqbar.Services.Framework.WCF
 
             // Create the ServiceHost.
             ServiceHost host = new ServiceHost(serviceType, finalAddress);
-            System.ServiceModel.Description.ServiceEndpoint endpoint = host.Description.Endpoints[0];
+            System.ServiceModel.Description.ServiceEndpoint endpoint = host.Description.Endpoints[0]; // Unsafe, mas de proposito. quero q expluda caso haja esquecimentos
             WSDualHttpBinding binding = (WSDualHttpBinding) endpoint.Binding;
             binding.MaxReceivedMessageSize = int.MaxValue;
+            binding.ClientBaseAddress = GetCallbackAddress(finalAddress);
 
-            //host.Description.Endpoints[0].Binding.
-            /*
-            // Enable metadata publishing.
-            ServiceMetadataBehavior smb = new ServiceMetadataBehavior();
-            smb.HttpGetEnabled = true;
-            smb.MetadataExporter.PolicyVersion = PolicyVersion.Policy15;
-            host.Description.Behaviors.Add(smb);
-            */
-
-            // Open the ServiceHost to start listening for messages. Since
-            // no endpoints are explicitly configured, the runtime will create
-            // one endpoint per base address for each serviceType contract implemented
-            // by the serviceType.
             host.Open();
 
             _services.Add(serviceType.ToString(), host);
@@ -59,6 +47,16 @@ namespace Uqbar.Services.Framework.WCF
 
                 _services.Remove(service.ToString());
             }
+        }
+
+        public static Uri GetCallbackAddress(string baseAddress)
+        {
+            return GetCallbackAddress(new Uri(baseAddress));
+        }
+
+        public static Uri GetCallbackAddress(Uri baseAddress)
+        {
+            return new Uri(baseAddress, "/Callback");
         }
     }
 }

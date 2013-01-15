@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
+using System.ServiceModel.Channels;
 using System.Text.RegularExpressions;
 using System.Web;
 using Uqbar.Services.Framework;
 using Uqbar.Services.Framework.Agendamento;
 using Uqbar.Services.Framework.Mensagens;
 using Uqbar.Services.Framework.WCF;
+using Uqbar.Services.Framework.WindowsService;
 using Uqbar.ServicesUI.ViewModels;
 
 namespace Uqbar.ServicesUI.Data
@@ -72,6 +74,8 @@ namespace Uqbar.ServicesUI.Data
                 // WCF
                 WSDualHttpBinding binding = new WSDualHttpBinding();
                 binding.MaxReceivedMessageSize = int.MaxValue;
+                binding.ClientBaseAddress = Service.GetCallbackAddress(this.URL);
+
                 EndpointAddress endpoint = new EndpointAddress(this.URL);
                 channelFactory = new DuplexChannelFactory<IService>(this, binding, endpoint);
                 channelFactory.Faulted += channelFactory_Faulted;
@@ -93,7 +97,7 @@ namespace Uqbar.ServicesUI.Data
             channel = null;
 
             this.Estado = EstadosEnum.Indisponivel;
-            this.Updated = DateTime.UtcNow;
+            this.Updated = DateTime.Now;
         }
 
         #endregion
@@ -188,7 +192,7 @@ namespace Uqbar.ServicesUI.Data
             this.ActionStart = newInfo.ActionStart;
             this.ActionEnd = newInfo.ActionEnd;
 
-            this.Updated = DateTime.UtcNow;
+            this.Updated = DateTime.Now;
         }
 
         public void CopyFrom(ServicoExtraInfo newInfo)

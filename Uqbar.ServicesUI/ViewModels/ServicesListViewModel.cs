@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using Uqbar.ServicesUI.Data;
 using Uqbar.Services.Framework;
+using Uqbar.Services.Framework.WindowsService;
 
 namespace Uqbar.ServicesUI.ViewModels
 {

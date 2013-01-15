@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Uqbar.Services.Framework;
+using Uqbar.Services.Framework.WindowsService;
 
 namespace Uqbar.ServicesUI.Data
 {
