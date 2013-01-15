@@ -95,14 +95,13 @@ namespace Uqbar.Services.WinSrv.CVM
 
         public void ActionLaunch()
         {
-            /*
-            File provider = new File();
+            Providers.Web provider = new Providers.Web();
 
-            FIIDadosCadastrais fiiDados = new FIIDadosCadastrais() { URL = "CVM - Dados Cadastrais.htm", DataProvider = provider };
+            FIIDadosCadastrais fiiDados = new FIIDadosCadastrais() { URL = "http://www.cvm.gov.br/asp/cvmwww/cadastro/CadListPartic.asp?strCAPTCHA=6097&Fisic_Juridic=&Tipo_Partic=67&Cpfcgc_Partic=&DtReg_Partic=&ContSocio=", DataProvider = provider };
 
             fiiDados.Perform();
-            */
 
+            /*
             Providers.Web provider = new Providers.Web();
 
             FIIDemonstraçõesFinanceiras fiiDados = new FIIDemonstraçõesFinanceiras()
@@ -112,6 +111,7 @@ namespace Uqbar.Services.WinSrv.CVM
             };
 
             fiiDados.Perform();
+            */ 
         }
 
         public void OnNewMessage(Mensagem msg)

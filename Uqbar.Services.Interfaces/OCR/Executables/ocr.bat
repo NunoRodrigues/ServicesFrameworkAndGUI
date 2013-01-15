@@ -1,12 +1,14 @@
 @ECHO OFF
-:Loop
-IF "%1"=="" GOTO Continue
+IF "%1"=="" GOTO EndOfFile
 
-djpeg -greyscale -dither none %1 temp.pnm
+del tmp.pnm
+del tmp.ocr
 
-gocr049 -i temp.pnm -o temp.ocr
+djpeg -greyscale -dither none %1 tmp.pnm
 
-SHIFT
-GOTO Loop
-:Continue
+gocr049 -i tmp.pnm -o tmp.ocr
+
+type tmp.ocr
+
+:EndOfFile
 

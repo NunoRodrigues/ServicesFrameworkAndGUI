@@ -11,7 +11,8 @@ namespace Uqbar.Services.WinSrv.CVM.Providers
     public interface IProvider
     {
         MemoryStream GetStream(string source);
+        HtmlDocument GetHtml(MemoryStream stream);
         HtmlDocument GetHtml(string source);
-        object GetFile(string source, out string filename);
+        MemoryStream GetFile(string source, out string filename);
     }
 }

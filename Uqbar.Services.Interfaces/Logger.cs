@@ -15,16 +15,19 @@ namespace Uqbar.Services.Framework
 
         public Logger()
         {
+            // TODO: REBUILD 
+            /*
             _log = new EventLog();
             _log.Source = "Uqbar.Services.WindowsService";
             _log.Log = "Application";
-
+            
             ((System.ComponentModel.ISupportInitialize)(_log)).BeginInit();
             if (!EventLog.SourceExists(_log.Source))
             {
                 EventLog.CreateEventSource(_log.Source, _log.Log);
             }
             ((System.ComponentModel.ISupportInitialize)(_log)).EndInit();
+            */
         }
 
         private EventLogEntryType GetType(Mensagem.MessageType type)
@@ -65,7 +68,8 @@ namespace Uqbar.Services.Framework
         {
             Console.WriteLine(msg);
 
-            _log.WriteEntry(msg, type);
+            // TODO: REBUILD
+            //_log.WriteEntry(msg, type);
         }
     }
 }

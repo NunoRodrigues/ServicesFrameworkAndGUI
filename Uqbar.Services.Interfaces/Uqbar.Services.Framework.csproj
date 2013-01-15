@@ -32,6 +32,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
@@ -47,6 +48,7 @@
     <Compile Include="Configuration.cs" />
     <Compile Include="Email\EmailClient.cs" />
     <Compile Include="Extensions\List.cs" />
+    <Compile Include="Extensions\MemoryStream.cs" />
     <Compile Include="Extensions\Queue.cs" />
     <Compile Include="Mensagens\IMessagemProvider.cs" />
     <Compile Include="Logger.cs" />
@@ -58,6 +60,20 @@
     <Compile Include="Mensagens\Mensagem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WCF\Service.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="OCR\Executables\djpeg.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="OCR\Executables\gocr049.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="OCR\Executables\ocr.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -29,7 +29,7 @@ namespace Uqbar.Services.WinSrv.CVM.Providers
             return doc;
         }
 
-        public object GetFile(string source, out string filename)
+        public MemoryStream GetFile(string source, out string filename)
         {
             /*
             string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\DataFiles\", source);
@@ -46,6 +46,11 @@ namespace Uqbar.Services.WinSrv.CVM.Providers
             filename = "";
             return null;
             
+        }
+
+        public HtmlDocument GetHtml(MemoryStream stream)
+        {
+            return null;
         }
     }
 }

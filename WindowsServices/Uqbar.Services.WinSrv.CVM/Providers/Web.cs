@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using HtmlAgilityPack;
+using Uqbar.Services.Framework;
 
 namespace Uqbar.Services.WinSrv.CVM.Providers
 {
@@ -67,13 +68,11 @@ namespace Uqbar.Services.WinSrv.CVM.Providers
             return GetStream(_lastResponse.GetResponseStream());
         }
 
-        public HtmlDocument GetHtml(string source)
+        public HtmlDocument GetHtml(MemoryStream stream)
         {
-            MemoryStream dataStream = GetStream(source);
+            stream.WriteFile(@"c:\ToDelete\" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".html");
 
-            writeStreamToFile(dataStream, DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".html");
-
-            StreamReader reader = new StreamReader(dataStream);
+            StreamReader reader = new StreamReader(stream);
             string text = reader.ReadToEnd();
 
             _lastDocument = new HtmlDocument();
@@ -81,17 +80,22 @@ namespace Uqbar.Services.WinSrv.CVM.Providers
             return _lastDocument;
         }
 
-        public object GetFile(string source, out string filename)
+        public HtmlDocument GetHtml(string source)
+        {
+            return GetHtml(GetStream(source));
+        }
+
+        public MemoryStream GetFile(string source, out string filename)
         {
             MemoryStream dataStream = GetStream(source);
 
             filename = getFilename(_lastResponse);
-            //writeStreamToFile(dataStream, getFilename(_lastResponse));
-            writeStreamToFile(dataStream, DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".pdf");
+
+            dataStream.WriteFile(@"c:\ToDelete\" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".pdf");
 
             dataStream.Close();
 
-            return null;
+            return dataStream;
         }
 
         private HttpWebRequest NewRequest(string url, bool keepalive)
@@ -232,18 +236,6 @@ namespace Uqbar.Services.WinSrv.CVM.Providers
             mem.Position = 0;
 
             return mem;
-        }
-
-        private void writeStreamToFile(MemoryStream stream, string filename)
-        {
-            using (FileStream file = new FileStream(@"c:\ToDelete\" + filename, FileMode.OpenOrCreate))
-            {
-                stream.CopyTo(file);
-                file.Flush();
-                file.Close();
-            }
-
-            stream.Position = 0;
         }
     }
 }
