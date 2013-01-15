@@ -12,7 +12,7 @@ using System.Web;
 using HtmlAgilityPack;
 using Uqbar.Services.Framework;
 
-namespace Uqbar.Services.WinSrv.CVM.Providers
+namespace Uqbar.Services.Framework.Providers
 {
     public class Web : IProvider
     {
@@ -68,11 +68,11 @@ namespace Uqbar.Services.WinSrv.CVM.Providers
             return GetStream(_lastResponse.GetResponseStream());
         }
 
-        public HtmlDocument GetHtml(MemoryStream stream)
+        public HtmlDocument GetHtml(MemoryStream stream, string encoding)
         {
-            stream.WriteFile(@"c:\ToDelete\" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".html");
+            //stream.WriteFile(@"c:\ToDelete\" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".html");
 
-            StreamReader reader = new StreamReader(stream);
+            StreamReader reader = new StreamReader(stream, Encoding.GetEncoding(encoding));
             string text = reader.ReadToEnd();
 
             _lastDocument = new HtmlDocument();
@@ -80,9 +80,9 @@ namespace Uqbar.Services.WinSrv.CVM.Providers
             return _lastDocument;
         }
 
-        public HtmlDocument GetHtml(string source)
+        public HtmlDocument GetHtml(string source, string encoding)
         {
-            return GetHtml(GetStream(source));
+            return GetHtml(GetStream(source), encoding);
         }
 
         public MemoryStream GetFile(string source, out string filename)
@@ -111,7 +111,7 @@ namespace Uqbar.Services.WinSrv.CVM.Providers
             request.Referer = _lastURL;
             request.Headers.Set("Accept-Encoding", "gzip,deflate,sdch");
             request.Headers.Set("Accept-Language", "en-GB,en-US;q=0.8,en;q=0.6,pt-PT;q=0.4");
-            request.Headers.Set("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.3");
+            //request.Headers.Set("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.3");
             request.CookieContainer = cookieJar;
             request.Headers.Set("Cache-Control", "max-age=0");
 

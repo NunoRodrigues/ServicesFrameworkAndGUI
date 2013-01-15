@@ -6,13 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 
-namespace Uqbar.Services.WinSrv.CVM.Providers
+namespace Uqbar.Services.Framework.Providers
 {
     public interface IProvider
     {
         MemoryStream GetStream(string source);
-        HtmlDocument GetHtml(MemoryStream stream);
-        HtmlDocument GetHtml(string source);
+        HtmlDocument GetHtml(MemoryStream stream, string Encoding);
+        HtmlDocument GetHtml(string source, string Encoding);
         MemoryStream GetFile(string source, out string filename);
     }
 }

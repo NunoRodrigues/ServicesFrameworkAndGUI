@@ -95,9 +95,12 @@ namespace Uqbar.Services.WinSrv.CVM
 
         public void ActionLaunch()
         {
-            Providers.Web provider = new Providers.Web();
 
-            FIIDadosCadastrais fiiDados = new FIIDadosCadastrais() { URL = "http://www.cvm.gov.br/asp/cvmwww/cadastro/CadListPartic.asp?strCAPTCHA=6097&Fisic_Juridic=&Tipo_Partic=67&Cpfcgc_Partic=&DtReg_Partic=&ContSocio=", DataProvider = provider };
+            Uqbar.Services.Framework.Providers.Web provider = new Uqbar.Services.Framework.Providers.Web();
+
+            FIIDadosCadastrais fiiDados = new FIIDadosCadastrais() { URL = new Uri("http://www.cvm.gov.br/asp/cvmwww/cadastro/CadListPartic.asp?Fisic_Juridic=&Tipo_Partic=67&Cpfcgc_Partic=&DtReg_Partic=&ContSocio="), DataProvider = provider };
+
+            fiiDados.NewMessage += this.OnNewMessage;
 
             fiiDados.Perform();
 
@@ -106,12 +109,14 @@ namespace Uqbar.Services.WinSrv.CVM
 
             FIIDemonstraçõesFinanceiras fiiDados = new FIIDemonstraçõesFinanceiras()
             {
-                URL = @"http://cvmweb.cvm.gov.br/SWB/Sistemas/SCW/CPublica/ResultListaPartic.aspx?TPConsulta=10",
+                URL = new Uri(@"http://cvmweb.cvm.gov.br/SWB/Sistemas/SCW/CPublica/ResultListaPartic.aspx?TPConsulta=10"),
                 DataProvider = provider
             };
+            
+            fiiDados.NewMessage += this.OnNewMessage;
 
             fiiDados.Perform();
-            */ 
+            */
         }
 
         public void OnNewMessage(Mensagem msg)

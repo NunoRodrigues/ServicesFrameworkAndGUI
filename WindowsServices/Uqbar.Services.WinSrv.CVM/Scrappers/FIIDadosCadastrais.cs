@@ -3,42 +3,62 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using HtmlAgilityPack;
+using System.Xml;
 using System.IO;
-using Uqbar.Services.WinSrv.CVM.Providers;
+using HtmlAgilityPack;
 using Uqbar.Services.Framework;
 using Uqbar.Services.Framework.OCR;
+using Uqbar.Services.Framework.Mensagens;
+using Uqbar.Services.Framework.Providers;
+using Uqbar.Services.WinSrv.CVM.Output;
+
 
 namespace Uqbar.Services.WinSrv.CVM.Scrappers
 {
-    public class FIIDadosCadastrais : IScrapper
+    public class FIIDadosCadastrais : IScrapper, IMessagemProvider
     {
-        public string URL { get; set; }
+        public event Mensagem.MensagemDelegate NewMessage;
+
+        public Uri URL { get; set; }
 
         public IProvider DataProvider { get; set; }
         
+        private XML output = null;
+
+        private readonly string _encoding = "ISO-8859-1";
+        
         public void Perform()
         {
-            HtmlDocument doc = GetPagina(this.URL);
+            HtmlDocument doc = GetPagina(this.URL.AbsoluteUri);
 
             if (doc.DocumentNode != null)
             {
-                HtmlNodeCollection tLista = doc.DocumentNode.SelectNodes(@"//div[@id='done']//table//tr//a");
+                output = new XML();
+                string filename = DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xml";
 
-                foreach (HtmlNode row in tLista)
+                HtmlNodeCollection tLista = doc.DocumentNode.SelectNodes(@"(//div[@id='done']//table//tr//a)"); //[position() < 3]
+
+                if (tLista != null)
                 {
-                    HtmlAttribute attr = row.Attributes["href"];
-                    if (attr != null)
+                    this.NewMessage.Raise(Mensagem.MessageType.Info, "Found " + tLista.Count + " item(s)");
+
+                    foreach (HtmlNode row in tLista)
                     {
-                        string title = row.InnerText;
-                        string link = attr.Value;
+                        HtmlAttribute attr = row.Attributes["href"];
+                        if (attr != null)
+                        {
+                            string link = attr.Value;
 
-                        GetFicha(link);
+                            GetFicha(link);
+                        }
 
-                        System.Diagnostics.Debug.WriteLine(title + " ::: " + link);
+                        output.Save(filename);
                     }
                 }
+                
+                this.NewMessage.Raise(Mensagem.MessageType.Info, "Saved : " + filename);
             }
+            
         }
 
         public HtmlDocument GetPagina(string url)
@@ -50,7 +70,7 @@ namespace Uqbar.Services.WinSrv.CVM.Scrappers
         {
             MemoryStream stream = DataProvider.GetStream(url);
 
-            HtmlDocument doc = DataProvider.GetHtml(stream);
+            HtmlDocument doc = DataProvider.GetHtml(stream, _encoding);
 
             if (trys < 30)
             {
@@ -66,11 +86,14 @@ namespace Uqbar.Services.WinSrv.CVM.Scrappers
 
                     MemoryStream img = DataProvider.GetStream(imgUrl.AbsoluteUri);
 
-                    string result = FixCAPTCHAKnownIssues(GOCR.Resolve(img));
+                    string captchaTry = GOCR.Resolve(img);
+                    captchaTry = FixCAPTCHAKnownIssues(captchaTry);
 
-                    if (result != null && result.IndexOf('_') < 0)
+                    if (captchaTry != null && captchaTry.IndexOf('_') < 0)
                     {
                         // Try
+                        this.NewMessage.Raise(Mensagem.MessageType.Info, "CAPTCHA #" + trys + ": " + captchaTry);
+
                         string param = "strCAPTCHA";
                         int start = url.IndexOf(param);
                         if (start > 0)
@@ -79,7 +102,11 @@ namespace Uqbar.Services.WinSrv.CVM.Scrappers
                             url = url.Substring(0, start) + url.Substring(end, url.Length - end);
                         }
 
-                        url = url.Replace("?", "?" + param + "=" + result + "&");
+                        url = url.Replace("?", "?" + param + "=" + captchaTry + "&");
+                    }
+                    else
+                    {
+                        this.NewMessage.Raise(Mensagem.MessageType.Info, "CAPTCHA #" + trys + ": MISSED");
                     }
 
                     return GetPagina(url, trys + 1);
@@ -91,24 +118,33 @@ namespace Uqbar.Services.WinSrv.CVM.Scrappers
 
         public void GetFicha(string url)
         {
-            // TODO REMOVE
-            url = "ResultBuscaDocsFdo01.htm";
+            Uri completeUrl = new Uri(this.URL, url);
 
-            HtmlDocument doc = GetPagina(url);
+            // Output
+            XmlElement fichaNode = output.AddElement("Ficha", null, completeUrl.AbsoluteUri);
+
+            HtmlDocument doc = GetPagina(completeUrl.AbsoluteUri);
 
             if (doc.DocumentNode != null)
             {
                 HtmlNodeCollection tLinhas = doc.DocumentNode.SelectNodes(@"//table[@id='TbMain']//tr[count(td) > 1]");
 
-                foreach (HtmlNode row in tLinhas)
+                if (tLinhas != null)
                 {
-                    HtmlNode labelNode = row.SelectSingleNode("td[1]");
-                    HtmlNode valueTextNode = row.SelectSingleNode("td[2]");
+                    this.NewMessage.Raise(Mensagem.MessageType.Info, "Fichas com " + tLinhas.Count + " linha(s)");
 
-                    string label = labelNode.InnerText;
-                    string value = valueTextNode.InnerText;
+                    foreach (HtmlNode row in tLinhas)
+                    {
+                        HtmlNode labelNode = row.SelectSingleNode("td[1]");
+                        HtmlNode valueTextNode = row.SelectSingleNode("td[2]");
 
-                    System.Diagnostics.Debug.WriteLine("--- " + label + " ::: " + value);
+                        string label = labelNode.InnerText;
+                        string value = valueTextNode.InnerText;
+
+                        output.AddElement(fichaNode, "Campo", label, value);
+
+                        System.Diagnostics.Debug.WriteLine("--- " + label + " ::: " + value);
+                    }
                 }
             }
         }
@@ -117,17 +153,24 @@ namespace Uqbar.Services.WinSrv.CVM.Scrappers
         {
             if (input != null)
             {
-                string output = input.Replace("B", "8");
-                output = output.Replace("O", "0");
-                output = output.Replace("g", "9");
-
-                output = output.Replace("\r", "");                
+                string output = input.Replace("\r", "");
                 output = output.Replace("\n", "");
+
+                output = output.Replace("O", "0");
+                output = output.Replace("o", "0");
+                output = output.Replace("a", "0");
+
+                output = output.Replace("q", "1");
+
+                output = output.Replace("B", "8");
+
+                output = output.Replace("g", "9");
 
                 return output.Trim();
             }
 
             return input;
         }
+
     }
 }

@@ -1,45 +1,70 @@
 ﻿using System;
 using HtmlAgilityPack;
-using Uqbar.Services.WinSrv.CVM.Providers;
+using System.Xml;
+using System.IO;
+using Uqbar.Services.Framework.Mensagens;
+using Uqbar.Services.Framework.Providers;
+using Uqbar.Services.WinSrv.CVM.Output;
 
 namespace Uqbar.Services.WinSrv.CVM.Scrappers
 {
-    public class FIIDemonstraçõesFinanceiras : IScrapper
+    public class FIIDemonstraçõesFinanceiras : IScrapper, IMessagemProvider
     {
-        
-        public string URL { get; set; }
+
+        public Uri URL { get; set; }
         
         public IProvider DataProvider { get; set; }
 
+        public event Mensagem.MensagemDelegate NewMessage;
+
+        private XML output = null;
+
+        private readonly string _enconding = "ISO-8859-1";
+
         public void Perform()
         {
-            HtmlDocument doc = DataProvider.GetHtml(this.URL);
-            Uri baseAddress = new Uri(this.URL);
+            this.NewMessage.Raise(Mensagem.MessageType.Info, "Started");
+
+            HtmlDocument doc = DataProvider.GetHtml(this.URL.AbsoluteUri, _enconding);
 
             if (doc.DocumentNode != null)
             {
-                HtmlNodeCollection tLista = doc.DocumentNode.SelectNodes(@"//table//tr/td/a");
+                output = new XML();
+                string filename = DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xml";
 
-                foreach (HtmlNode row in tLista)
+                HtmlNodeCollection tLista = doc.DocumentNode.SelectNodes(@"(//table//tr/td/a)");
+
+                if (tLista != null)
                 {
-                    HtmlAttribute attr = row.Attributes["href"];
-                    if (attr != null)
+                    this.NewMessage.Raise(Mensagem.MessageType.Info, "Found " + tLista.Count + " item(s)");
+
+                    foreach (HtmlNode row in tLista)
                     {
-                        string title = row.InnerText;
-                        string link = attr.Value;
+                        HtmlAttribute attr = row.Attributes["href"];
+                        if (attr != null)
+                        {
+                            string title = row.InnerText;
+                            string link = attr.Value;
 
-                        GetFicha(baseAddress, link);
+                            GetFicha(link);
+                        }
 
-                        System.Diagnostics.Debug.WriteLine(title + " ::: " + attr.Value);
+                        output.Save(filename);
                     }
                 }
+
+                this.NewMessage.Raise(Mensagem.MessageType.Info, "Saved : " + filename);
             }
         }
 
-        public void GetFicha(Uri baseAddress, string link)
+        public void GetFicha(string link)
         {
-            Uri url = new Uri(baseAddress, link);
-            HtmlDocument doc = DataProvider.GetHtml(url.AbsoluteUri);
+            Uri completeUrl = new Uri(this.URL, link);
+
+            // Output
+            XmlElement fichaNode = output.AddElement("Ficha", null, completeUrl.AbsoluteUri);
+
+            HtmlDocument doc = DataProvider.GetHtml(completeUrl.AbsoluteUri, _enconding);
 
             if (doc.DocumentNode != null)
             {
@@ -59,7 +84,7 @@ namespace Uqbar.Services.WinSrv.CVM.Scrappers
                             {
                                 for (int i = 0; i < values.Count; i++)
                                 {
-                                    GetCell(cols[i], values[i]);
+                                    GetCell(fichaNode, cols[i], values[i]);
                                 }
                             }
                         }
@@ -68,7 +93,7 @@ namespace Uqbar.Services.WinSrv.CVM.Scrappers
             }
         }
 
-        public void GetCell(HtmlNode nodeLabel, HtmlNode nodeValue)
+        public void GetCell(XmlElement outputParent, HtmlNode nodeLabel, HtmlNode nodeValue)
         {
             HtmlNode label = nodeLabel.SelectSingleNode("b");
 
@@ -78,16 +103,14 @@ namespace Uqbar.Services.WinSrv.CVM.Scrappers
 
             if (label != null && value != null)
             {
+                string nome = label.InnerText;
+                string valor = null;
                 if (value.Name == "option")
                 {
                     if (string.IsNullOrEmpty(value.InnerText) == false)
-                    {
-                        System.Diagnostics.Debug.WriteLine("--- " + label.InnerText + " ::: " + value.InnerText);
-                    }
+                        valor = value.InnerText;
                     else
-                    {
-                        System.Diagnostics.Debug.WriteLine("--- " + label.InnerText + " ::: " + value.Attributes["value"].Value);
-                    }
+                        valor = value.Attributes["value"].Value;
                 }
                 else if (value.Name == "a")
                 {
@@ -96,16 +119,20 @@ namespace Uqbar.Services.WinSrv.CVM.Scrappers
                     if (link.Contains("__doPostBack"))
                     {
                         string filename;
-                        DataProvider.GetFile(link, out filename);
-                        System.Diagnostics.Debug.WriteLine("--- " + label.InnerText + " ::: " + link);
-                    }
+                        MemoryStream file = DataProvider.GetFile(link, out filename);
 
-                    System.Diagnostics.Debug.WriteLine("--- " + label.InnerText + " ::: " + link);
+                        nome = filename;
+                        valor = Convert.ToBase64String(file.ToArray());
+                    }
                 }
                 else
                 {
-                    System.Diagnostics.Debug.WriteLine("--- " + label.InnerText + " ::: " + value.InnerText);
+                    valor = value.InnerText;
                 }
+
+                XmlElement fichaNode = output.AddElement(outputParent, "Campo", nome, valor);
+
+                System.Diagnostics.Debug.WriteLine("--- " + nome + " ::: " + ((valor != null) ? valor : ""));
             }
             else
             {
